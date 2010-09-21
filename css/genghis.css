@@ -1,0 +1,32 @@
+body { 
+  font: 62.5% "Trebuchet MS", sans-serif; 
+  margin: 50px;
+}
+#mongos-dialog { 
+  display: none;
+}
+.hidden { 
+  display: none;
+}
+
+/* stats */
+.warning { 
+  color: yellow;
+}
+.danger { 
+  color: red;
+  font-weight: bold;
+}
+.shard-stats-host { 
+  padding-left: 18px;
+}
+
+/* shards */
+.chunk { 
+  padding: 3px;
+  margin: 3px;
+  border: 1px solid #DDDDDD;
+}
+.min, .max, .shard-key { 
+  font-family: monospace;
+}

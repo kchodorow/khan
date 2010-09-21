@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+
+echo "starting your server..."
+
+python backend/httpd.py -d ./ $*

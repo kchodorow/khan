@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <title>Genghis Khan</title>
+
+  <link type="text/css" href="css/jquery-ui-mongo.css" rel="stylesheet" />
+  <link type="text/css" href="css/jquery.tooltip.css" rel="stylesheet" />
+  <link type="text/css" href="css/genghis.css" rel="stylesheet" />
+
+  <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+  <script type="text/javascript" src="js/jquery-ui-1.8.custom.min.js"></script>
+  <script type="text/javascript" src="js/jquery.json-2.2.min.js"></script>
+  <script type="text/javascript" src="js/jquery.timers-1.2.js"></script>
+  <script type="text/javascript" src="js/genghis.js"></script>
+  <script type="text/javascript">
+
+rs = new ReplicaSet();
+
+$(document).ready(function() {
+
+  $("#rs-name").focus();
+
+  $("#rs-name").focusout(function() {
+    rs.setName();
+  });
+
+  View.addHostDiv($("#rs-name")[0]);
+});
+
+  </script>
+ </head>
+ <body>
+
+  <div id="error-dialog"></div>
+
+  <div id="rs-status"></div>
+
+  <div id="rs-servers">
+
+   <div>
+    <label>Replica set name:</label>
+    <input type="text" id="rs-name">
+   </div>
+
+   <div>
+    <input type="submit" onclick="rs.initialize(); return false;" value="initialize"/>
+   </div>
+
+  </div>
+ </body>
+</html>
