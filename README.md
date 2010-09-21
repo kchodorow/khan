@@ -15,7 +15,7 @@ you to easily set up a replica set.
 
 * Start up your replica set servers.
 
-* Go to [http://localhost:27080][2] in a web browser and fill out the 
+* Go to [http://localhost:27080][1] in a web browser and fill out the 
 information about your set.
 
 ## Problems?
@@ -26,3 +26,5 @@ own convenience, hopefully it will help some other people out, too.
 ## Quote
 
 KHAAAAAAAAAAAAAAAAN!
+
+  [1]: http://localhost:27080

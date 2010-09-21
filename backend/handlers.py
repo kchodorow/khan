@@ -119,8 +119,7 @@ class MongoHandler:
         config = json.loads(args.getvalue('config'), object_hook=json_util.object_hook)
 
         for i in self.connections:
-            print i
-            result = i['admin'].command({"replSetInitialize" : config}, check = False);
+            result = self.connections[i]['admin'].command({"replSetInitiate" : config}, check = False);
             if not result['ok']:
                 out('{"ok" : false}');
                 return

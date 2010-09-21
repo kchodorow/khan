@@ -26,7 +26,7 @@ var ReplicaSet = function() {
 };
 
 ReplicaSet.prototype.setName = function() {
-  this.config._id = $("#rs-name").text();
+  this.config._id = $("#rs-name").val();
 };
 
 ReplicaSet.prototype.getServer = function(input) {
@@ -91,16 +91,16 @@ ReplicaSet.prototype.initialize = function() {
       "host" : this.servers[i].host,
     }
     if (this.servers[count].arbiterOnly) {
-      config.members[count].arbiterOnly = true;
+      this.config.members[count].arbiterOnly = true;
     }
     if (this.servers[count].priority == 0) {
-      config.members[count].priority = 0;
+      this.config.members[count].priority = 0;
     }
 
     count++;
   }
 
-  $.post("/_initialize", {'config' : config}, this.confirmConfig, "json");
+  $.post("/_initialize", {'config' : $.toJSON(this.config)}, this.confirmConfig, "json");
 };
 
 ReplicaSet.prototype.confirmConnect = function(msg) {
@@ -117,6 +117,7 @@ ReplicaSet.prototype.confirmConnect = function(msg) {
 ReplicaSet.prototype.confirmConfig = function(msg) {
   if (!msg || !msg.ok) {
     View.showError(msg);
+    return;
   }
 
   $("#rs-status").append(msg.message);  
