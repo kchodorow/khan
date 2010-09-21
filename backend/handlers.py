@@ -30,17 +30,6 @@ class MongoHandler:
 
     def __init__(self, mongos):
         self.connections = {}
-        self.cluster = {}
-
-        for host in mongos:
-            args = FakeFieldStorage({"server" : host})
-            stream = FakeStream()
-
-            self._initialize(args, stream.ostream)
-
-            result = json.loads(stream.get_ostream())
-            if result["ok"]:
-                return
 
     def _get_connection(self, name = None, host = None, port = None):
         if name == None and host == None:
@@ -109,19 +98,40 @@ class MongoHandler:
         out('{"ok" : true, "name" : "%s"}' % name);
 
 
-    def _initialize(self, args, out):
-        """ POST """
+    def _config(self, args, out):
+        for i in self.connections:
+            result = self.connections[i]['local']['system']['replset'].find_one();
+            if result != None:
+                out(json.dumps(result));
+                return
 
-        
+        out('{"ok" : false, "message" : "could not find config"}')
+
+
+    def run_command(self, cmd, out):
+        for i in self.connections:
+            result = self.connections[i]['admin'].command(cmd, check = False);
+            if result['ok']:
+                out(json.dumps(result));
+                return
+
+        out('{"ok" : false}')
+
+
+    def _initialize(self, args, out):
         if not "config" in args:
             out('{"ok" : false, "message" : "must give config"}');
 
         config = json.loads(args.getvalue('config'), object_hook=json_util.object_hook)
 
-        for i in self.connections:
-            result = self.connections[i]['admin'].command({"replSetInitiate" : config}, check = False);
-            if not result['ok']:
-                out('{"ok" : false}');
-                return
+        self.run_command({"replSetInitiate" : config}, out)
 
-        out('{"ok" : 1}')
+
+    def _reconfigure(self, args, out):
+        if not "config" in args:
+            out('{"ok" : false, "message" : "must give config"}');
+
+        config = json.loads(args.getvalue('config'), object_hook=json_util.object_hook)
+
+        self.run_command({"replSetReconfig" : config}, out)
+

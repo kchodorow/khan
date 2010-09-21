@@ -45,14 +45,6 @@ ReplicaSet.prototype.setHost = function(input) {
   if (input.value == "") {
     return;
   }
-
-  if (this.trackDuplicates[input.value]) {
-    input.value = "";
-    $(input).focus();
-    return;
-  }
-
-  this.trackDuplicates[input.value] = true;
   
   $.ajax({
         "url" : "/_connect",
@@ -77,7 +69,7 @@ ReplicaSet.prototype.setPassive = function(input) {
   this.getServer(input).priority = (this.checked ? 0 : 1);
 };
 
-ReplicaSet.prototype.initialize = function() {
+ReplicaSet.prototype.getConfig = function() {
   // count might differ from i, if hosts have been removed
   var count = 0;
   var dup = {};
@@ -99,8 +91,20 @@ ReplicaSet.prototype.initialize = function() {
 
     count++;
   }
+};
 
+ReplicaSet.prototype.initialize = function() {
+  this.getConfig();
+  
   $.post("/_initialize", {'config' : $.toJSON(this.config)}, this.confirmConfig, "json");
+};
+
+ReplicaSet.prototype.reconfigure = function() {
+  this.getConfig();
+  
+  this.config.version++;
+
+  $.post("/_reconfigure", {'config' : $.toJSON(this.config)}, this.confirmConfig, "json");
 };
 
 ReplicaSet.prototype.confirmConnect = function(msg) {
@@ -120,7 +124,15 @@ ReplicaSet.prototype.confirmConfig = function(msg) {
     return;
   }
 
-  $("#rs-status").append(msg.message);  
+  $("#configure").val("reconfigure");
+  
+  $.ajax({
+      "async" : false,
+      "url" : "/_config",
+      "success" : function(data) {
+        rs.config = data;
+      }
+    });
 };
 
 View = {
@@ -136,24 +148,34 @@ View.getIndex = function(input) {
 
 View.addHostDiv = function(prev) {
   // ids are of the form hN
-  if (View.getIndex(prev) < View.hostDivs) {
+  var index = View.getIndex(prev);
+  if (isNaN(index)) {
+    index = -1;
+  }
+  
+  if (index < View.hostDivs) {
     return;
   }
+  
+  index++;
 
   var server = View.getPiece("/pieces/server.html");
-
+  server.find(".host").attr("id", "h"+index);
+  server.find(".arb").attr("id", "h"+index+"-arb");
+  server.find(".passive").attr("id", "h"+index+"-passive");
+  
   // add a new div
   $(prev).parent().after(server);
 
-  $(".host").focusout(function() {
+  server.find(".host").focusout(function() {
     rs.setHost(this);
   });
 
-  $(".arb").focusout(function() {
+  server.find(".arb").focusout(function() {
     rs.setArbiter(this);
   });
 
-  $(".passive").focusout(function() {
+  server.find(".passive").focusout(function() {
     rs.setPassive(this);
   });
 

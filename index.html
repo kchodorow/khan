@@ -26,6 +26,18 @@ $(document).ready(function() {
   });
 
   View.addHostDiv($("#rs-name")[0]);
+
+  $("#rs-servers").submit(function() { 
+    if ($("#configure").val() == "initialize") {
+      rs.initialize();
+    }
+    else {
+      rs.reconfigure();
+    }
+
+    return false;
+  });
+
 });
 
   </script>
@@ -36,7 +48,7 @@ $(document).ready(function() {
 
   <div id="rs-status"></div>
 
-  <div id="rs-servers">
+  <form id="rs-servers">
 
    <div>
     <label>Replica set name:</label>
@@ -44,9 +56,10 @@ $(document).ready(function() {
    </div>
 
    <div>
-    <input type="submit" onclick="rs.initialize(); return false;" value="initialize"/>
+    <input type="submit" id="configure" value="initialize"/>
    </div>
 
-  </div>
+  </form>
+
  </body>
 </html>
